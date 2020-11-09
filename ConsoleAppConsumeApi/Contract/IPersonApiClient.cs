@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ConsoleAppConsumeApi.Model;
+using System.Threading.Tasks;
 
 namespace ConsoleAppConsumeApi.Contract
 {

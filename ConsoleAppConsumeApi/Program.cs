@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using ConsoleAppConsumeApi.Contract;
+using ConsoleAppConsumeApi.Core;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Net.Http;
