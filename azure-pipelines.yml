@@ -32,6 +32,25 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: Testing
+  inputs:
+    command: 'test'
+    projects: '${{ parameters.workingTestDirectory }}/**/*[Tt]est/*.csproj'
+    arguments: '--collect:"Code Coverage" --settings ${{ parameters.runsettingsFile }} --configuration $(BuildConfiguration) --filter TestCategory=UnitTest /p:CollectCoverage=true /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/' 
+    testRunTitle: 'Unit Test'
+
+- task: ArchiveFiles@2
+  displayName: 'Archive files'
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output '
+    includeRootFolder: false
+    archiveType: zip
+    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    replaceExistingArchive: true
+
+
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish code coverage report'
   inputs:
