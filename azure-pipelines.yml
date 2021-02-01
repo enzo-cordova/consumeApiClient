@@ -1,6 +1,17 @@
 trigger:
 - master
 
+variables:
+  # Function app name
+  functionAppName: 'AppConsumeApi'
+
+  # Agent VM image name
+  vmImageName: 'windows-latest'
+
+  # Working Directory
+  workingDirectory: '$(System.DefaultWorkingDirectory)/Main/ConsoleAppConsumeApi'
+  workingTestDirectory : '$(System.DefaultWorkingDirectory)/Test'
+  
 parameters:
 - name: vmImageName # name of the parameter; required
   type: string # data type of the parameter; required
