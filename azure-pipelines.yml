@@ -3,7 +3,7 @@ trigger:
 
 variables:
   # Function app name
-  functionAppName: 'af-crm-core-invoice'
+  functionAppName: 'AppConsumeApi'
 
   # Agent VM image name
   vmImageName: 'windows-latest'
@@ -15,9 +15,8 @@ variables:
 resources:
   repositories:
     - repository: templates
-      type: githubenterprise
-      name: enzo-cordova/templates
-      endpoint: 'github.com_enzo-cordova'
+      type: git
+      name: enzo-cordova/templates         
 
 stages:
 - template: yaml/buildNetCore.yml@templates  # Template reference
