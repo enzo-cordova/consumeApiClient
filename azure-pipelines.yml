@@ -12,17 +12,7 @@ variables:
   workingDirectory: '$(System.DefaultWorkingDirectory)/Main/ConsoleAppConsumeApi'
   workingTestDirectory : '$(System.DefaultWorkingDirectory)/Test'
   
-parameters:
-- name: vmImageName # name of the parameter; required
-  type: string # data type of the parameter; required
-  default: windows-latest
-- name: workingDirectory # name of the parameter; required
-  type: string # data type of the parameter; required
-- name: workingTestDirectory # name of the parameter; required
-  type: string # data type of the parameter; required
-- name: runsettingsFile # name of the parameter; required
-  type: string # data type of the parameter; required
-
+ 
 stages:
 
 - stage: Build
@@ -40,7 +30,7 @@ stages:
       inputs:
         command: 'restore'
         projects: |
-          ${{ parameters.workingDirectory }}/*.csproj
+          $(workingDirectory)/*.csproj
         vstsFeed: '1340e873-1429-4a12-8d6a-73006979dee9'
 
     - task: DotNetCoreCLI@2
@@ -48,14 +38,14 @@ stages:
       inputs:
         command: 'build'
         projects: |
-          ${{ parameters.workingDirectory }}/*.csproj
+          $(workingDirectory)/*.csproj
         arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
 
     - task: DotNetCoreCLI@2
       displayName: Testing
       inputs:
        command: 'test'
-       projects: '${{ parameters.workingTestDirectory }}/**/*[Tt]est/*.csproj'
+       projects: '$(workingTestDirectory)/**/*[Tt]est/*.csproj'
        arguments: '--collect:"Code Coverage" --settings ${{ parameters.runsettingsFile }} --configuration $(BuildConfiguration) --filter TestCategory=UnitTest /p:CollectCoverage=true /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/' 
        testRunTitle: 'Unit Test'
 
