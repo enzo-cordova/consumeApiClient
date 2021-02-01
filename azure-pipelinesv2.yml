@@ -1,0 +1,32 @@
+trigger:
+- master
+
+variables:
+  # Function app name
+  functionAppName: 'AppConsumeApi'
+
+  # Agent VM image name
+  vmImageName: 'windows-latest'
+
+  # Working Directory
+  workingDirectory: '$(System.DefaultWorkingDirectory)/Main/ConsoleAppConsumeApi'
+  workingTestDirectory : '$(System.DefaultWorkingDirectory)/Test'
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: enzo-cordova/templates         
+
+stages:
+- template: yaml/buildNetCore.yml@templates  # Template reference
+  parameters:
+    vmImageName: $(vmImageName)
+    workingDirectory: '$(workingDirectory)'
+    workingTestDirectory: '$(workingTestDirectory)'
+    runsettingsFile: '$(Build.SourcesDirectory)/Main/codecoverage.runsettings'
+
+- template: yaml/deployAzureFunction.yml@templates  # Template reference
+  parameters:
+    vmImageName: $(vmImageName)
+    functionAppName: $(functionAppName)
