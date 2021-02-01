@@ -5,7 +5,11 @@ VisualStudioVersion = 16.0.30330.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleAppConsumeApi", "ConsoleAppConsumeApi\ConsoleAppConsumeApi.csproj", "{5D1B6DF0-F76B-4E78-A31A-812EB39E877F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitTestPersonClient", "XUnitTestPersonClient\XUnitTestPersonClient.csproj", "{A442C09B-0D11-4A25-A58A-0222BAC7510F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleAppConsumeApi.Test", "XUnitTestPersonClient\ConsoleAppConsumeApi.Test.csproj", "{A442C09B-0D11-4A25-A58A-0222BAC7510F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{09DE29A1-0CE0-4712-BF32-CA8043DECF32}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{E70623CD-63F1-4975-BFD9-84DD9E6355C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +28,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5D1B6DF0-F76B-4E78-A31A-812EB39E877F} = {09DE29A1-0CE0-4712-BF32-CA8043DECF32}
+		{A442C09B-0D11-4A25-A58A-0222BAC7510F} = {E70623CD-63F1-4975-BFD9-84DD9E6355C0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {61FD6772-164F-48E8-AE93-6D12507F2169}
