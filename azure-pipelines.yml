@@ -11,8 +11,8 @@ variables:
   # Working Directory
   workingDirectory: '$(System.DefaultWorkingDirectory)/Main/ConsoleAppConsumeApi'
   workingTestDirectory : '$(System.DefaultWorkingDirectory)/Test'
-  
- 
+  runsettingsFile: '$(Build.SourcesDirectory)/Main/codecoverage.runsettings' 
+
 stages:
 
 - stage: Build
@@ -22,7 +22,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      vmImage: ${{ parameters.vmImageName }}
+      vmImage: $(vmImageName)
 
     steps:
     - task: DotNetCoreCLI@2
@@ -46,7 +46,7 @@ stages:
       inputs:
        command: 'test'
        projects: '$(workingTestDirectory)/**/*[Tt]est/*.csproj'
-       arguments: '--collect:"Code Coverage" --settings ${{ parameters.runsettingsFile }} --configuration $(BuildConfiguration) --filter TestCategory=UnitTest /p:CollectCoverage=true /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/' 
+       arguments: '--collect:"Code Coverage" --settings $(runsettingsFile) --configuration $(BuildConfiguration) --filter TestCategory=UnitTest /p:CollectCoverage=true /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/' 
        testRunTitle: 'Unit Test'
 
     - task: ArchiveFiles@2
