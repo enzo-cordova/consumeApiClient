@@ -17,7 +17,7 @@ resources:
     - repository: templates
       type: githubenterprise
       name: enzo-cordova/templates
-      endpoint: 'GitHub MPI OAuth'
+      endpoint: 'github.com_enzo-cordova'
 
 stages:
 - template: yaml/buildNetCore.yml@templates  # Template reference
