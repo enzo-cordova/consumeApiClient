@@ -1,32 +1,58 @@
-trigger:
-- master
-
-variables:
-  # Function app name
-  functionAppName: 'AppConsumeApi'
-
-  # Agent VM image name
-  vmImageName: 'windows-latest'
-
-  # Working Directory
-  workingDirectory: '$(System.DefaultWorkingDirectory)/Main/ConsoleAppConsumeApi'
-  workingTestDirectory : '$(System.DefaultWorkingDirectory)/Test'
-
-resources:
-  repositories:
-    - repository: templates
-      type: git
-      name: enzo-cordova/templates         
+parameters:
+- name: vmImageName # name of the parameter; required
+  type: string # data type of the parameter; required
+  default: windows-latest
+- name: workingDirectory # name of the parameter; required
+  type: string # data type of the parameter; required
+- name: workingTestDirectory # name of the parameter; required
+  type: string # data type of the parameter; required
+- name: runsettingsFile # name of the parameter; required
+  type: string # data type of the parameter; required
 
 stages:
-- template: yaml/buildNetCore.yml@templates  # Template reference
-  parameters:
-    vmImageName: $(vmImageName)
-    workingDirectory: '$(workingDirectory)'
-    workingTestDirectory: '$(workingTestDirectory)'
-    runsettingsFile: '$(Build.SourcesDirectory)/Main/codecoverage.runsettings'
 
-- template: yaml/deployAzureFunction.yml@templates  # Template reference
-  parameters:
-    vmImageName: $(vmImageName)
-    functionAppName: $(functionAppName)
+- stage: Build
+  displayName: Build stage
+
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: ${{ parameters.vmImageName }}
+
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: Restore Nuget
+      inputs:
+        command: 'restore'
+        projects: |
+          ${{ parameters.workingDirectory }}/*.csproj
+        vstsFeed: '1340e873-1429-4a12-8d6a-73006979dee9'
+
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        command: 'build'
+        projects: |
+          ${{ parameters.workingDirectory }}/*.csproj
+        arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
+
+    - task: DotNetCoreCLI@2
+      displayName: Testing
+      inputs:
+       command: 'test'
+       projects: '${{ parameters.workingTestDirectory }}/**/*[Tt]est/*.csproj'
+       arguments: '--collect:"Code Coverage" --settings ${{ parameters.runsettingsFile }} --configuration $(BuildConfiguration) --filter TestCategory=UnitTest /p:CollectCoverage=true /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/' 
+       testRunTitle: 'Unit Test'
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output '
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        replaceExistingArchive: true
+        
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      artifact: drop
