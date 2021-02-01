@@ -26,14 +26,6 @@ stages:
 
     steps:
     - task: DotNetCoreCLI@2
-      displayName: Restore Nuget
-      inputs:
-        command: 'restore'
-        projects: |
-          $(workingDirectory)/*.csproj
-        vstsFeed: '1340e873-1429-4a12-8d6a-73006979dee9'
-
-    - task: DotNetCoreCLI@2
       displayName: Build
       inputs:
         command: 'build'
