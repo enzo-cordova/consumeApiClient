@@ -1,58 +1,33 @@
-# ASP.NET
-# Build and test ASP.NET projects.
-# Add steps that publish symbols, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
-
 trigger:
-- main
-
-pool:
-  vmImage: 'windows-latest'
+- master
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  # Function app name
+  functionAppName: 'af-crm-core-invoice'
 
-steps:
-- task: NuGetToolInstaller@1
+  # Agent VM image name
+  vmImageName: 'windows-latest'
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+  # Working Directory
+  workingDirectory: '$(System.DefaultWorkingDirectory)/Main/ConsoleAppConsumeApi'
+  workingTestDirectory : '$(System.DefaultWorkingDirectory)/Test'
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+resources:
+  repositories:
+    - repository: templates
+      type: githubenterprise
+      name: enzo-cordova/templates
+      endpoint: 'GitHub MPI OAuth'
 
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+stages:
+- template: yaml/buildNetCore.yml@templates  # Template reference
+  parameters:
+    vmImageName: $(vmImageName)
+    workingDirectory: '$(workingDirectory)'
+    workingTestDirectory: '$(workingTestDirectory)'
+    runsettingsFile: '$(Build.SourcesDirectory)/Main/codecoverage.runsettings'
 
-- task: DotNetCoreCLI@2
-  displayName: Testing
-  inputs:
-    command: 'test'
-    projects: '${{ parameters.workingTestDirectory }}/**/*[Tt]est/*.csproj'
-    arguments: '--collect:"Code Coverage" --settings ${{ parameters.runsettingsFile }} --configuration $(BuildConfiguration) --filter TestCategory=UnitTest /p:CollectCoverage=true /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/' 
-    testRunTitle: 'Unit Test'
-
-- task: ArchiveFiles@2
-  displayName: 'Archive files'
-  inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output '
-    includeRootFolder: false
-    archiveType: zip
-    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-    replaceExistingArchive: true
-
-
-- task: PublishCodeCoverageResults@1
-  displayName: 'Publish code coverage report'
-  inputs:
-    codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
+- template: yaml/deployAzureFunction.yml@templates  # Template reference
+  parameters:
+    vmImageName: $(vmImageName)
+    functionAppName: $(functionAppName)
